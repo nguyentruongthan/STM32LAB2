@@ -361,7 +361,8 @@ static void MX_GPIO_Init(void)
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	timerRun();
 	if(timer1_flag == 1){
-		setTimer1(50);
+		HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
+		setTimer1(100);
 		update7SEG(index_led);
 		index_led = (index_led + 1) % MAX_LED;
 	}
