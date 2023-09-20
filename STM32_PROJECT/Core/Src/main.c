@@ -190,7 +190,8 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_GPIO_WritePin(DOT_GPIO_Port, DOT_Pin, RESET);
-  setTimer1(50);
+  setTimer1(2);
+  setTimer2(7);
   int status = 0;
   while (1)
   {
@@ -227,8 +228,12 @@ int main(void)
 	}
 	if(timer1_flag == 1){
 	  setTimer1(50);
-	  HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
 	  status = (status + 1) % 4;
+	}
+	if(timer2_flag == 1){
+		setTimer2(100);
+		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
 	}
     /* USER CODE END WHILE */
 
