@@ -231,7 +231,6 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  setTimer1(50);
   int hour = 15, minute = 8, second = 50;
   while (1)
   {
@@ -248,7 +247,7 @@ int main(void)
 		  hour = 0;
 	  }
 	  updateClockBuffer(hour, minute);
-	  HAL_Delay (1000) ;
+	  HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -380,13 +379,7 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	timerRun();
-	if(timer1_flag == 1){
-		HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
-		setTimer1(50);
-		update7SEG(index_led);
-		index_led = (index_led + 1) % MAX_LED;
-	}
+
 }
 /* USER CODE END 4 */
 
