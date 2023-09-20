@@ -732,11 +732,11 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  setTimer1(2);
- 8000600:	2002      	movs	r0, #2
+  setTimer1(3);
+ 8000600:	2003      	movs	r0, #3
  8000602:	f000 f96d 	bl	80008e0 <setTimer1>
-  setTimer2(3);
- 8000606:	2003      	movs	r0, #3
+  setTimer2(5);
+ 8000606:	2005      	movs	r0, #5
  8000608:	f000 f97e 	bl	8000908 <setTimer2>
   int hour = 15, minute = 8, second = 50;
  800060c:	230f      	movs	r3, #15
