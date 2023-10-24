@@ -202,6 +202,15 @@ uint16_t ROW_PIN[8] =  {ROW0_Pin, ROW1_Pin, ROW2_Pin, ROW3_Pin,
 						ROW4_Pin, ROW5_Pin, ROW6_Pin, ROW7_Pin};
 int index_led_matrix = 0;
 uint8_t matrix_buffer[8] = {0x07, 0xcb, 0xcd, 0xce, 0xce, 0xcd, 0xcb, 0x07};
+					//0		1		1	  1	   	0	  0		1	  1		1
+					//1		1		1	  0		1	  1		0	  1		1
+					//2		1		0	  1		1	  1		1	  0		1
+					//3		0		1	  1		1     1		1  	  1		0
+					//4		0		0	  0		0	  0		0	  0		0
+					//5		0		0	  0		0	  0		0	  0		0
+					//6		0		1	  1		1	  1		1	  1		0
+					//7		0		1  	  1		1     1		1	  1		0
+
 void updateLEDMatrix(int index){
 	HAL_GPIO_WritePin(ENM0_GPIO_Port, ENM0_Pin, SET);
 	HAL_GPIO_WritePin(ENM1_GPIO_Port, ENM1_Pin, SET);
@@ -247,10 +256,10 @@ void updateLEDMatrix(int index){
 	default: break;
 	}
 	uint8_t tem = matrix_buffer[index];
-	for(uint8_t i = 0; i < 8; i++){
-		if(tem % 2){
+	for(uint8_t i = 0; i < MAX_LED_MATRIX; i++){
+		if(tem % 2){// LSB of tem is 0
 			HAL_GPIO_WritePin(GPIOB, ROW_PIN[i], SET);
-		}else{
+		}else{		// LSB of tem is 1
 			HAL_GPIO_WritePin(GPIOB, ROW_PIN[i], RESET);
 		}
 		tem >>= 1;
