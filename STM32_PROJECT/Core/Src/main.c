@@ -357,17 +357,30 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-int count = 3;
+int timer_led_count = 3;	// count for update variable "index_led"
+						//value using at update7SEG() function
+int timer_dot_count = 2;	// count for determine condition to toggle
+						//DOT_LED
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if(count > 0){
-		count --;
-		if(count <= 0){
-			count = 100;
-			HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
-			update7SEG(index_led);
-			index_led = (index_led + 1) % MAX_LED;
-		}
-	}
+    if(timer_led_count > 0){
+        timer_led_count --;	//decrease by 1 every 10ms (once timer interrupt)
+        if(timer_led_count <= 0){	//	condition to update variable "index_led"
+        							//and update timer_led_count
+            timer_led_count = 25;	//timer_led_count with 25 (250ms)
+                                    //therefore, "index_led" will switch every 250ms
+            update7SEG(index_led);
+            index_led = (index_led + 1) % MAX_LED;	//update "index_led"
+        }
+    }
+    if(timer_dot_count > 0){
+    	timer_dot_count --; //decrease by 1 every 10ms (once timer interrupt)
+    	if(timer_dot_count <= 0){	//condition to toggle DOT_LED and update timer_dot_count
+    		timer_dot_count = 100;	//timer_led_count with 100 (1s)
+            						//therefore, "index_led" will switch every second
+
+    		HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);	//toggle DOT_LED
+    	}
+    }
 }
 /* USER CODE END 4 */
 
