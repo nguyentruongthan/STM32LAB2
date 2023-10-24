@@ -317,25 +317,27 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-int status = 1;
-int count = 50;
+int status = 1; //flag for determine which LED will turn on
+int count = 3; 	//count for switching time between 2 LEDs when it <= 0
+				//we can initial "count" with any value
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if(status == 1){
-		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);
-		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
-		display7SEG(1);
-	}else{
-		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
-		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);
-		display7SEG(2);
-	}
-	if(count > 0){
-		count --;
-		if(count <= 0){
-			count = 50;
-			status = (status == 1) ? 2 : 1;
-		}
-	}
+    if(status == 1){//enable LED 1 and disable LED 2
+        HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);	//enable LED 1
+        HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);  	//disable LED 2
+        display7SEG(1);//LED 1 screen number 1
+    }else{//disable LED 1 and enable LED 2
+        HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);		//disable LED 1
+        HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);	//enable LED 2
+        display7SEG(2);//LED 2 screen number 2
+    }
+    if(count > 0){
+        count --;//decrease "count" every 10ms (once timer interrupt)
+        if(count <= 0){//condition for switch LED
+            count = 50;//set "count" to 50 (500ms)
+            status = (status == 1) ? 0 : 1; //switch flag for switch LED
+            HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin); //toggle LED in PA5 every 500ms
+        }
+    }
 }
 /* USER CODE END 4 */
 
