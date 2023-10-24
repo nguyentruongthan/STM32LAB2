@@ -8,10 +8,13 @@
 #ifndef INC_SOFTWARE_TIMER_H_
 #define INC_SOFTWARE_TIMER_H_
 
-extern int timer1_flag;
-extern int timer2_flag;
-void timerRun();
-void setTimer1(int duration);
-void setTimer2(int duration);
+extern int timer_dot_flag;	//flag use for update LED_DOT
+void timer_run();	//	decrease timer_count by 1 for timer_dot_count
+					//and set timer_dot_flag if timer_dot_count <= 0
+
+//function set_timer_dot():
+//	- reset timer_dot_flag
+//	- set timer_counter for its object with duration
+void set_timer_dot(int duration);
 
 #endif /* INC_SOFTWARE_TIMER_H_ */

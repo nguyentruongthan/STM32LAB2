@@ -157,36 +157,49 @@ const int MAX_LED = 4;
 int index_led = 0;
 int led_buffer[4] = {1, 2, 3, 4};
 void update7SEG(int index){
-	display7SEG(led_buffer[index]);
-	switch(index){
-	case 0:
-		// Display the first 7 SEG with led_buffer [0]
-		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);
-		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
-		HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
-		HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
-		break;
-	case 1:
-		// Display the first 7 SEG with led_buffer [1]
-		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
-		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);
-		HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
-		HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
-		break;
-	case 2:
-		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
-		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
-		HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, RESET);
-		HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
-		break;
-	case 3:
-		HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
-		HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
-		HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
-		HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, RESET);
-		break;
-	default: break;
-	}
+    switch(index){
+    case 0:
+        // Display the first 7 SEG with led_buffer [0]
+        // enable the first LED_7SEG , disable other LED_7SEG
+        HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);
+        HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
+        HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
+        HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
+        // display first value in led_buffer[]
+        display7SEG(led_buffer[0]);
+        break;
+    case 1:
+        // Display the second 7 SEG with led_buffer [1]
+        // enable the second LED_7SEG, disable other LED_7SEG
+        HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
+        HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);
+        HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
+        HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
+        // display second value in led_buffer[]
+        display7SEG(led_buffer[1]);
+        break;
+    case 2:
+        // Display the third 7 SEG with led_buffer [2]
+        // enable the third LED_7SEG, disable other LED_7SEG
+        HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
+        HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
+        HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, RESET);
+        HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
+        // display third value in led_buffer[]
+        display7SEG(led_buffer[2]);
+        break;
+    case 3:
+        // Display the fourth 7 SEG with led_buffer [3]
+        // enable the fourth LED_7SEG, disable other LED_7SEG
+        HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
+        HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
+        HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
+        HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, RESET);
+        // display fourth value in led_buffer[]
+        display7SEG(led_buffer[3]);
+        break;
+    default: break;
+    }
 }
 void updateClockBuffer(int hour, int minute){
 	led_buffer[0] = hour / 10;
@@ -231,12 +244,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  setTimer1(3);
+  set_timer_dot(3);
   int hour = 15, minute = 8, second = 50;
   while (1)
   {
-	  if(timer1_flag == 1){
-		  	setTimer1(100);
+	  if(timer_dot_flag == 1){
+		  	set_timer_dot(100);	// set timer_dot_count = 100 (1s)
+		  						// and reset timer_dot_flag
 			second ++;
 			if(second >= 60){
 			  second = 0;
@@ -382,9 +396,22 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+int timer_led_count = 3;	// count for update variable "index_led"
+							//value using at update7SEG() function
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	timerRun();
+	timer_run();
+
+	//scanning four LED_7SEG
+	if(timer_led_count > 0){
+		timer_led_count --;	//decrease by 1 every 10ms (once timer interrupt)
+		if(timer_led_count <= 0){	//	condition to update variable "index_led"
+									//and update timer_led_count
+			timer_led_count = 25;	//timer_led_count with 25 (250ms)
+									//therefore, "index_led" will switch every 250ms
+			update7SEG(index_led);
+			index_led = (index_led + 1) % MAX_LED;	//update "index_led"
+		}
+	}
 }
 /* USER CODE END 4 */
 
