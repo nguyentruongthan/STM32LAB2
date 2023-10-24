@@ -320,53 +320,55 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-int status = 0;
-int timer1_count = 2;
-int timer2_count = 5;
+int status = 0;	//	flag for determine status of state machine which use for
+				//determine which LED_7SEG will turn on
+int timer_led_count = 2;//count for determine change status of state machine
+int timer_dot_count = 5;//count for blink LED_DOT
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	switch(status){
 		case 0:
-			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);
-			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
-			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
-			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
-			display7SEG(1);
+			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, RESET);	//LED_7SED 1 enable
+			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);	  	//LED_7SED 2 disable
+			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);		//LED_7SED 3 disable
+			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);		//LED_7SED 4 disable
+			display7SEG(1);	//LED_7SEG 1 display "1"
 			break;
 		case 1:
-			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
-			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);
-			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
-			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
-			display7SEG(2);
+			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);		//LED_7SED 1 disable
+			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, RESET);	//LED_7SED 2 enable
+			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);		//LED_7SED 3 disable
+			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);		//LED_7SED 4 disable
+			display7SEG(2);	//LED_7SEG 2 display "2"
 			break;
 		case 2:
-			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
-			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
-			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, RESET);
-			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);
-			display7SEG(3);
+			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);		//LED_7SED 1 disable
+			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);		//LED_7SED 2 disable
+			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, RESET);	//LED_7SED 3 enable
+			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, SET);		//LED_7SED 4 disable
+			display7SEG(3);	//LED_7SEG 3 display "3"
 			break;
 		case 3:
-			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);
-			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);
-			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);
-			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, RESET);
-			display7SEG(0);
+			HAL_GPIO_WritePin(EN0_GPIO_Port, EN0_Pin, SET);		//LED_7SED 1 disable
+			HAL_GPIO_WritePin(EN1_GPIO_Port, EN1_Pin, SET);		//LED_7SED 2 disable
+			HAL_GPIO_WritePin(EN2_GPIO_Port, EN2_Pin, SET);		//LED_7SED 3 disable
+			HAL_GPIO_WritePin(EN3_GPIO_Port, EN3_Pin, RESET);	//LED_7SED 4 enable
+			display7SEG(0);	//LED_7SEG 4 display "0"
 			break;
 		default: break;
 	}
-	if(timer1_count > 0){
-		timer1_count --;
-		if(timer1_count <= 0){
-			timer1_count = 50;
-			status = (status + 1) % 4;
+	if(timer_led_count > 0){
+		timer_led_count --;//decrease timer_led_count by 1 every 10ms (once timer interrupt)
+		if(timer_led_count <= 0){//condition for change state of state machine for LED_7SEG
+			timer_led_count = 50;	//set timer_led_count with 50 (500ms)
+									//therefore, the switching time for each seven LED_7SEG is 0.5s
+			status = (status + 1) % 4;//change status of state machine
 		}
 	}
-	if(timer2_count > 0){
-		timer2_count --;
-		if(timer2_count <= 0){
-			timer2_count = 100;
-			HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);
+	if(timer_dot_count > 0){
+		timer_dot_count --;//decrease timer_led_count by 1 every 10ms (once timer interrupt)
+		if(timer_dot_count <= 0){//condition for change status of LED_DOT
+			timer_dot_count = 100;//set timer_dot_count with 100 (1s)
+			HAL_GPIO_TogglePin(DOT_GPIO_Port, DOT_Pin);//toggle LED_DOT
 		}
 	}
 }
